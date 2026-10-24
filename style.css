@@ -1,1 +1,17 @@
+/* Customização das barras de rolagem para telas menores */
+#chat-messages::-webkit-scrollbar {
+  width: 6px;
+}
 
+#chat-messages::-webkit-scrollbar-track {
+  background: rgba(15, 23, 42, 0.6);
+}
+
+#chat-messages::-webkit-scrollbar-thumb {
+  background: #334155;
+  border-radius: 9999px;
+}
+
+#chat-messages::-webkit-scrollbar-thumb:hover {
+  background: #475569;
+}
