@@ -1,1 +1,81 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Meu Web App com IA</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="style.css">
+  <script type="importmap">
+    {
+      "imports": {
+        "@google/genai": "https://esm.sh/@google/genai@latest"
+      }
+    }
+  </script>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen flex items-center justify-center p-4">
 
+  <!-- Tela de Boas-Vindas -->
+  <div id="welcome-screen" class="bg-slate-800 border border-slate-700 rounded-2xl p-8 max-w-md w-full text-center shadow-2xl">
+    <div class="w-16 h-16 bg-blue-600/20 text-blue-400 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-blue-500/30">
+      ✨
+    </div>
+    <h1 class="text-2xl font-bold mb-2">Bem-vindo ao Nosso App</h1>
+    <p class="text-slate-400 mb-8">Você quer começar a conversar com a nossa Inteligência Artificial agora?</p>
+    <div class="flex gap-4">
+      <button id="btn-no" class="flex-1 py-3 px-4 rounded-xl border border-slate-600 text-slate-300 font-medium hover:bg-slate-700 transition">Não</button>
+      <button id="btn-yes" class="flex-1 py-3 px-4 rounded-xl bg-blue-600 text-white font-medium hover:bg-blue-500 transition shadow-lg shadow-blue-600/30">Sim</button>
+    </div>
+  </div>
+
+  <!-- Tela do Chat -->
+  <div id="chat-screen" class="hidden bg-slate-800 border border-slate-700 rounded-2xl max-w-2xl w-full h-[85vh] flex flex-col shadow-2xl overflow-hidden">
+    <!-- Cabeçalho -->
+    <div class="p-4 bg-slate-800/80 border-b border-slate-700 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white font-bold shadow-md">
+          AI
+        </div>
+        <div>
+          <h2 class="font-bold leading-tight">Assistente Gemini</h2>
+          <p class="text-xs text-emerald-400 flex items-center gap-1">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 inline-block animate-pulse"></span> Online
+          </p>
+        </div>
+      </div>
+      <div class="flex items-center gap-2">
+        <input type="password" id="api-key-input" placeholder="Sua Gemini API Key" class="bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-blue-500 w-36">
+      </div>
+    </div>
+
+    <!-- Mensagens -->
+    <div id="chat-messages" class="flex-1 p-4 overflow-y-auto space-y-4 text-sm scroll-smooth">
+      <div class="flex items-start gap-3">
+        <div class="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-xs font-bold text-white shrink-0">AI</div>
+        <div class="bg-slate-700/60 border border-slate-600/50 rounded-2xl rounded-tl-none p-3.5 max-w-[80%] text-slate-200 leading-relaxed">
+          Olá! Como posso te ajudar hoje? Pode me perguntar qualquer coisa!
+        </div>
+      </div>
+    </div>
+
+    <!-- Indicador de Digitação -->
+    <div id="typing-indicator" class="hidden px-4 py-2 text-xs text-slate-400 italic flex items-center gap-2">
+      <span class="w-2 h-2 bg-blue-500 rounded-full animate-bounce"></span>
+      <span class="w-2 h-2 bg-blue-500 rounded-full animate-bounce [animation-delay:0.2s]"></span>
+      <span class="w-2 h-2 bg-blue-500 rounded-full animate-bounce [animation-delay:0.4s]"></span>
+      <span>Gemini está pensando...</span>
+    </div>
+
+    <!-- Entrada de Texto -->
+    <form id="chat-form" class="p-3 bg-slate-900 border-t border-slate-700/80 flex gap-2">
+      <input type="text" id="user-input" placeholder="Digite sua mensagem..." class="flex-1 bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-blue-500">
+      <button type="submit" id="send-btn" class="bg-blue-600 hover:bg-blue-500 text-white px-5 py-2.5 rounded-xl font-medium transition shadow-md shadow-blue-600/20 flex items-center justify-center">
+        Enviar
+      </button>
+    </form>
+  </div>
+
+  <script type="module" src="script.js"></script>
+</body>
+</html>
