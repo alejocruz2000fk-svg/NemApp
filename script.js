@@ -10,10 +10,8 @@ const userInput = document.getElementById('user-input');
 const apiKeyInput = document.getElementById('api-key-input');
 const typingIndicator = document.getElementById('typing-indicator');
 
-// Histórico de conversas local
 let conversationHistory = [];
 
-// Botão "Não"
 btnNo?.addEventListener('click', () => {
   welcomeScreen.innerHTML = `
     <div class="py-4">
@@ -23,13 +21,11 @@ btnNo?.addEventListener('click', () => {
   `;
 });
 
-// Botão "Sim"
 btnYes?.addEventListener('click', () => {
   welcomeScreen.classList.add('hidden');
   chatScreen.classList.remove('hidden');
 });
 
-// Função para exibir mensagem
 function appendMessage(sender, text) {
   const wrapper = document.createElement('div');
   wrapper.className = `flex items-start gap-3 ${sender === 'user' ? 'justify-end' : ''}`;
@@ -59,7 +55,6 @@ function escapeHtml(str) {
   }[m]));
 }
 
-// Envio de mensagem
 chatForm.addEventListener('submit', async (e) => {
   e.preventDefault();
   const text = userInput.value.trim();
@@ -75,13 +70,11 @@ chatForm.addEventListener('submit', async (e) => {
   userInput.value = '';
   typingIndicator.classList.remove('hidden');
 
-  // Adiciona a mensagem do usuário ao histórico
   conversationHistory.push({ role: 'user', parts: [{ text: text }] });
 
   try {
     const ai = new GoogleGenAI({ apiKey });
 
-    // Chamada direta generateContent em vez de chat session
     const response = await ai.models.generateContent({
       model: 'gemini-2.5-flash',
       contents: conversationHistory,
@@ -93,7 +86,6 @@ chatForm.addEventListener('submit', async (e) => {
     typingIndicator.classList.add('hidden');
     
     if (response && response.text) {
-      // Adiciona a resposta da IA ao histórico local
       conversationHistory.push({ role: 'model', parts: [{ text: response.text }] });
       appendMessage('ai', response.text);
     } else {
@@ -103,8 +95,8 @@ chatForm.addEventListener('submit', async (e) => {
   } catch (error) {
     console.error(error);
     typingIndicator.classList.add('hidden');
-    // Remove a última mensagem enviada do histórico para não quebrar a próxima tentativa
     conversationHistory.pop();
-    appendMessage('ai', "Erro ao conectar. Verifique se a sua API Key está correta e tente de novo.");
+    // Exibe a mensagem técnica detalhada na tela em vez do texto genérico
+    appendMessage('ai', `⚠️ ERRO DETALHADO: ${error.message || JSON.stringify(error)}`);
   }
 });
