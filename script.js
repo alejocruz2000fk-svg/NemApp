@@ -13,17 +13,17 @@ const typingIndicator = document.getElementById('typing-indicator');
 let chatSession = null;
 
 // Botão "Não"
-btnNo.addEventListener('click', () => {
+btnNo?.addEventListener('click', () => {
   welcomeScreen.innerHTML = `
     <div class="py-4">
       <h2 class="text-xl font-bold text-slate-200 mb-2">Tá bom! 👍</h2>
-      <p class="text-slate-400">Se mudar de idéia, basta recarregar a página.</p>
+      <p class="text-slate-400">Se mudar de ideia, basta recarregar a página.</p>
     </div>
   `;
 });
 
 // Botão "Sim"
-btnYes.addEventListener('click', () => {
+btnYes?.addEventListener('click', () => {
   welcomeScreen.classList.add('hidden');
   chatScreen.classList.remove('hidden');
 });
@@ -87,11 +87,17 @@ chatForm.addEventListener('submit', async (e) => {
 
     const response = await chatSession.sendMessage({ message: text });
     typingIndicator.classList.add('hidden');
-    appendMessage('ai', response.text);
+    
+    if (response && response.text) {
+      appendMessage('ai', response.text);
+    } else {
+      appendMessage('ai', "Sem resposta da IA. Tente novamente.");
+    }
 
   } catch (error) {
     console.error(error);
     typingIndicator.classList.add('hidden');
-    appendMessage('ai', "Erro ao conectar com a IA. Verifique sua API Key e conexão.");
+    chatSession = null; // Reseta a sessão em caso de erro na chave
+    appendMessage('ai', "Erro ao conectar. Verifique se a sua API Key está correta e tente de novo.");
   }
 });
