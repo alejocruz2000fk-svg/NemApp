@@ -10,7 +10,8 @@ const userInput = document.getElementById('user-input');
 const apiKeyInput = document.getElementById('api-key-input');
 const typingIndicator = document.getElementById('typing-indicator');
 
-let chatSession = null;
+// Histórico de conversas local
+let conversationHistory = [];
 
 // Botão "Não"
 btnNo?.addEventListener('click', () => {
@@ -74,21 +75,26 @@ chatForm.addEventListener('submit', async (e) => {
   userInput.value = '';
   typingIndicator.classList.remove('hidden');
 
-  try {
-    if (!chatSession) {
-      const ai = new GoogleGenAI({ apiKey });
-      chatSession = ai.chats.create({
-        model: "gemini-2.5-flash",
-        config: {
-          systemInstruction: "Você é um assistente virtual amigável em um aplicativo web. Responda de forma clara e direta."
-        }
-      });
-    }
+  // Adiciona a mensagem do usuário ao histórico
+  conversationHistory.push({ role: 'user', parts: [{ text: text }] });
 
-    const response = await chatSession.sendMessage({ message: text });
+  try {
+    const ai = new GoogleGenAI({ apiKey });
+
+    // Chamada direta generateContent em vez de chat session
+    const response = await ai.models.generateContent({
+      model: 'gemini-2.5-flash',
+      contents: conversationHistory,
+      config: {
+        systemInstruction: "Você é um assistente virtual amigável em um aplicativo web. Responda de forma clara e direta."
+      }
+    });
+
     typingIndicator.classList.add('hidden');
     
     if (response && response.text) {
+      // Adiciona a resposta da IA ao histórico local
+      conversationHistory.push({ role: 'model', parts: [{ text: response.text }] });
       appendMessage('ai', response.text);
     } else {
       appendMessage('ai', "Sem resposta da IA. Tente novamente.");
@@ -97,7 +103,8 @@ chatForm.addEventListener('submit', async (e) => {
   } catch (error) {
     console.error(error);
     typingIndicator.classList.add('hidden');
-    chatSession = null;
-    appendMessage('ai', "Erro ao conectar. Verifique sua API Key e conexão.");
+    // Remove a última mensagem enviada do histórico para não quebrar a próxima tentativa
+    conversationHistory.pop();
+    appendMessage('ai', "Erro ao conectar. Verifique se a sua API Key está correta e tente de novo.");
   }
 });
