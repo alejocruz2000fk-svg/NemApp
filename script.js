@@ -1,4 +1,4 @@
-import { GoogleGenAI } from "@google/genai";
+import { GoogleGenAI } from "https://esm.run/@google/genai";
 
 const welcomeScreen = document.getElementById('welcome-screen');
 const chatScreen = document.getElementById('chat-screen');
@@ -28,7 +28,7 @@ btnYes?.addEventListener('click', () => {
   chatScreen.classList.remove('hidden');
 });
 
-// Adicionar mensagem na tela
+// Função para exibir mensagem
 function appendMessage(sender, text) {
   const wrapper = document.createElement('div');
   wrapper.className = `flex items-start gap-3 ${sender === 'user' ? 'justify-end' : ''}`;
@@ -58,7 +58,7 @@ function escapeHtml(str) {
   }[m]));
 }
 
-// Enviar mensagem para o Gemini
+// Envio de mensagem
 chatForm.addEventListener('submit', async (e) => {
   e.preventDefault();
   const text = userInput.value.trim();
@@ -97,7 +97,7 @@ chatForm.addEventListener('submit', async (e) => {
   } catch (error) {
     console.error(error);
     typingIndicator.classList.add('hidden');
-    chatSession = null; // Reseta a sessão em caso de erro na chave
-    appendMessage('ai', "Erro ao conectar. Verifique se a sua API Key está correta e tente de novo.");
+    chatSession = null;
+    appendMessage('ai', "Erro ao conectar. Verifique sua API Key e conexão.");
   }
 });
