@@ -96,7 +96,6 @@ chatForm.addEventListener('submit', async (e) => {
     console.error(error);
     typingIndicator.classList.add('hidden');
     conversationHistory.pop();
-    // Exibe a mensagem técnica detalhada na tela em vez do texto genérico
     appendMessage('ai', `⚠️ ERRO DETALHADO: ${error.message || JSON.stringify(error)}`);
   }
 });
