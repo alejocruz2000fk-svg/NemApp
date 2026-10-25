@@ -76,8 +76,9 @@ chatForm.addEventListener('submit', async (e) => {
     const ai = new GoogleGenAI({ apiKey });
 
     const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
-      contents: conversationHistory,
+  model: 'gemini-3.8-flash',
+  contents: conversationHistory,
+
       config: {
         systemInstruction: "Você é um assistente virtual amigável em um aplicativo web. Responda de forma clara e direta."
       }
