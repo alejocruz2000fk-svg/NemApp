@@ -6,13 +6,6 @@
   <title>Meu Web App com IA</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="style.css">
-  <script type="importmap">
-    {
-      "imports": {
-        "@google/genai": "https://esm.sh/@google/genai@latest"
-      }
-    }
-  </script>
 </head>
 <body class="bg-slate-900 text-slate-100 min-h-screen flex items-center justify-center p-4">
 
@@ -22,7 +15,7 @@
       ✨
     </div>
     <h1 class="text-2xl font-bold mb-2">Bem-vindo ao Nosso App</h1>
-    <p class="text-slate-400 mb-8">Você quer começar a conversar com a nossa Inteligência Artificial agora?</p>
+    <p class="text-slate-400 mb-6">Você quer começar a conversar com a nossa Inteligência Artificial agora?</p>
     <div class="flex gap-4">
       <button id="btn-no" class="flex-1 py-3 px-4 rounded-xl border border-slate-600 text-slate-300 font-medium hover:bg-slate-700 transition">Não</button>
       <button id="btn-yes" class="flex-1 py-3 px-4 rounded-xl bg-blue-600 text-white font-medium hover:bg-blue-500 transition shadow-lg shadow-blue-600/30">Sim</button>
@@ -34,7 +27,7 @@
     <!-- Cabeçalho -->
     <div class="p-4 bg-slate-800/80 border-b border-slate-700 flex items-center justify-between">
       <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white font-bold shadow-md">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center font-bold text-white shadow-md">
           AI
         </div>
         <div>
@@ -45,7 +38,7 @@
         </div>
       </div>
       <div class="flex items-center gap-2">
-        <input type="password" id="api-key-input" placeholder="Sua Gemini API Key" class="bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-blue-500 w-36">
+        <input type="password" id="api-key-input" placeholder="Sua Gemini API Key" class="bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-xs focus:outline-none focus:border-blue-500 w-36 sm:w-48 text-slate-200">
       </div>
     </div>
 
@@ -53,10 +46,26 @@
     <div id="chat-messages" class="flex-1 p-4 overflow-y-auto space-y-4 text-sm scroll-smooth">
       <div class="flex items-start gap-3">
         <div class="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-xs font-bold text-white shrink-0">AI</div>
-        <div class="bg-slate-700/60 border border-slate-600/50 rounded-2xl rounded-tl-none p-3.5 max-w-[80%] text-slate-200 leading-relaxed">
-          Olá! Como posso te ajudar hoje? Pode me perguntar qualquer coisa!
+        <div class="bg-slate-700/60 border border-slate-600/50 rounded-2xl rounded-tl-none p-3.5 max-w-[80%] text-slate-200 leading-relaxed break-words">
+          Olá! Como posso te ajudar hoje? Pode me enviar texto, tirar fotos ou gravar áudio!
         </div>
       </div>
+    </div>
+
+    <!-- Visualização da Câmera -->
+    <div id="camera-container" class="hidden p-3 bg-slate-900/90 border-t border-slate-700 flex flex-col items-center gap-2">
+      <video id="webcam" autoplay playsinline class="w-full max-w-xs rounded-xl border border-slate-700 max-h-48 object-cover"></video>
+      <div class="flex gap-2">
+        <button id="btn-snap" type="button" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs px-3 py-1.5 rounded-lg font-medium">📸 Tirar Foto</button>
+        <button id="btn-close-cam" type="button" class="bg-slate-700 hover:bg-slate-600 text-slate-300 text-xs px-3 py-1.5 rounded-lg">Fechar</button>
+      </div>
+    </div>
+    <canvas id="canvas" class="hidden"></canvas>
+
+    <!-- Indicador de Foto Anexada -->
+    <div id="photo-preview" class="hidden px-4 py-2 bg-slate-900/50 border-t border-slate-700/50 flex items-center justify-between">
+      <span class="text-xs text-emerald-400 flex items-center gap-1">📷 Foto capturada e pronta para envio</span>
+      <button id="btn-remove-photo" class="text-xs text-rose-400 hover:underline">Remover</button>
     </div>
 
     <!-- Indicador de Digitação -->
@@ -67,16 +76,17 @@
       <span>Gemini está pensando...</span>
     </div>
 
-    <!-- Entrada de Texto -->
-    <form id="chat-form" class="p-3 bg-slate-900 border-t border-slate-700/80 flex gap-2">
-      <input type="text" id="user-input" placeholder="Digite sua mensagem..." class="flex-1 bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-blue-500">
-      <button type="submit" id="send-btn" class="bg-blue-600 hover:bg-blue-500 text-white px-5 py-2.5 rounded-xl font-medium transition shadow-md shadow-blue-600/20 flex items-center justify-center">
-        Enviar
-      </button>
+    <!-- Entrada de Texto e Botões Multimídia -->
+    <form id="chat-form" class="p-3 bg-slate-900 border-t border-slate-700/80 flex items-center gap-2">
+      <button id="btn-open-cam" type="button" title="Abrir Câmera" class="bg-slate-800 hover:bg-slate-700 text-slate-200 p-2.5 rounded-xl border border-slate-700 transition">📷</button>
+      <button id="btn-record-audio" type="button" title="Gravar Áudio" class="bg-slate-800 hover:bg-slate-700 text-slate-200 p-2.5 rounded-xl border border-slate-700 transition">🎙️</button>
+      
+      <input type="text" id="user-input" placeholder="Digite sua mensagem..." class="flex-1 bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-blue-500 transition">
+      
+      <button type="submit" id="send-btn" class="bg-blue-600 hover:bg-blue-500 text-white px-5 py-2.5 rounded-xl font-medium transition shadow-lg shadow-blue-600/20 shrink-0">Enviar</button>
     </form>
   </div>
 
-  <script type="module" src="script.js?v=1000"></script>
-  
+  <script type="module" src="script.js?v=2000"></script>
 </body>
 </html>
